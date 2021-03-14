@@ -1,10 +1,15 @@
 package domain.model
 
 import java.math.BigDecimal
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 
-data class Operation(val type: Type, val amount: BigDecimal, val date: LocalDate, val currency: String = "EUR") {
+data class Operation(
+    val type: Type,
+    var amount: BigDecimal,
+    val date: LocalDateTime = LocalDateTime.now(),
+    val currency: String = "EUR"
+) {
     enum class Type {
         DEPOSIT, WITHDRAWAL
     }

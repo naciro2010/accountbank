@@ -1,42 +1,88 @@
 package accountbank
 
-import io.cucumber.java.PendingException
+import domain.model.CostumerAccount
+import domain.model.Operation
+import domain.usecase.CostumerAccountOperation
+import infra.adapter.AccountOperation
+import io.cucumber.datatable.DataTable
+import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
+import junit.framework.Assert.assertEquals
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.Month
 
 class StepDefs {
 
+    private lateinit var costumerAccount: CostumerAccountOperation
+
+    private val identifyAccount = "936a0787-7a00-46b3-af4d-6ab55d22cd6a"
+    private lateinit var balanceAnswer: BigDecimal
+    private lateinit var listOperation: List<Operation>
+
+    private val now = LocalDateTime.of(
+        LocalDate.of(2021, Month.FEBRUARY, 2),
+        LocalTime.of(17, 9)
+    )
+
+
+    @Before
+    fun setUp() {
+        val accountOperation = AccountOperation()
+        costumerAccount = CostumerAccountOperation(accountOperation)
+    }
 
     @Given("I have an empty account")
     @Throws(Exception::class)
     fun i_have_an_empty_account() {
-        throw PendingException()
+        costumerAccount.deposit(
+            Operation(Operation.Type.DEPOSIT, BigDecimal.valueOf(0), now),
+            CostumerAccount(identifyAccount, "firstName", "LastName")
+        )
     }
 
 
-    @Given("I deposit (\\d+) Euros")
+    @Given("I deposit (\\d+) euros")
     @Throws(Exception::class)
     fun i_deposit_amount_euros(amount: BigDecimal) {
-        throw PendingException()
+        balanceAnswer = costumerAccount.deposit(
+            Operation(Operation.Type.DEPOSIT, amount, now),
+            CostumerAccount(identifyAccount, "firstName", "LastName")
+        ).balance
     }
 
-    @Given("I withdraw (\\d+) Euros")
+    @Given("I withdraw (\\d+) euros")
     @Throws(Exception::class)
     fun i_withdraw_amount_euros(amount: BigDecimal) {
-        throw PendingException()
+        balanceAnswer = costumerAccount.withdraw(
+            Operation(Operation.Type.WITHDRAWAL,amount, now),
+            CostumerAccount(identifyAccount, "firstName", "LastName")
+        ).balance
     }
 
-    @When("I ask for the statement")
+    @When("I ask for my balance")
     @Throws(Exception::class)
-    fun i_ask_for_the_statement() {
-        throw PendingException()
+    fun i_ask_for_my_balance(): BigDecimal {
+        return balanceAnswer
     }
 
     @Then("My balance should be (\\d+) Euros$")
     @Throws(Exception::class)
     fun my_balance_should_be_amount_euros(expectedAnswer: BigDecimal) {
-        throw PendingException()
+        assertEquals(expectedAnswer, balanceAnswer)
+    }
+
+    @When("I show my history")
+    fun i_show_my_history() {
+        listOperation = costumerAccount.showHistory(CostumerAccount(identifyAccount, "firstName", "LastName"))
+    }
+
+    @Then("I should see")
+    fun i_should_see(dataTable: DataTable?) {
+
     }
 }

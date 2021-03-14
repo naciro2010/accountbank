@@ -7,14 +7,11 @@ Feature: Statement printing
     Given I have an empty account
 
   Scenario: make multiple deposits on my account and print statement
-    Given make the following operations
-      | operation  | date       | amount |
-      | DEPOSIT    | 2010-10-01 | 50     |
-      | DEPOSIT    | 2010-10-02 | 30     |
-      | WITHDRAWAL | 2010-10-03 | 20     |
+    Given I deposit 100 euros
+    And I withdraw 50 euros
     When I show my history
     Then I should see
-      | operation  | date       | amount | balance |
-      | WITHDRAWAL | 2010-10-03 | -20    | 60      |
-      | DEPOSIT    | 2010-10-02 | 30     | 80      |
-      | DEPOSIT    | 2010-10-01 | 50     | 50      |
+      | type       | date             | amount | balance | currency |
+      | WITHDRAWAL | 2021-02-02T17:09 | -50    | 50      | EUR      |
+      | DEPOSIT    | 2021-02-02T17:09 | 100    | 100     | EUR      |
+
