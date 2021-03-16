@@ -21,12 +21,7 @@ class CostumerAccountOperation(private val accountInfra: IAccountOperation) : IC
     override fun withdraw(operation: Operation, costumerAccount: CostumerAccount): CostumerAccount {
 
         return accountInfra.getAccountByAccountId(costumerAccount.identify).also {
-            if (it.balance < operation.amount || Operation.Type.WITHDRAWAL != operation.type)
-                throw Operation_no_authorization(
-                    costumerAccount.identify,
-                    operation.type.toString(),
-                    operation.amount
-                )
+            isOperationAuthorized(it, operation)
         }
             .let {
                 accountInfra.updateAccount(it, it.balance.subtract(operation.amount))
@@ -38,5 +33,19 @@ class CostumerAccountOperation(private val accountInfra: IAccountOperation) : IC
 
     override fun showHistory(costumerAccount: CostumerAccount) =
         accountInfra.getOperationsByAccountId(costumerAccount.identify)
+
+
+    private fun isOperationAuthorized(
+        costumerAccount: CostumerAccount,
+        operation: Operation
+    ) {
+        if (costumerAccount.balance < operation.amount || Operation.Type.WITHDRAWAL != operation.type)
+            throw Operation_no_authorization(
+                costumerAccount.identify,
+                operation.type.toString(),
+                operation.amount
+            )
+    }
+
 
 }
