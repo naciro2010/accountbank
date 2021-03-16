@@ -1,5 +1,24 @@
+# EMG Partners Platform API
+> When not specified, every command should be run from root directory
 
- 
+## Getting started
+Prerequisites on local machine:
+- Java 8 installed and the corresponding SDK
+- Maven 3 installed
+
+Step to run application locally:
+- Clone project: `git clone git@github.com:naciro2010/accountbank.git`
+- build application and run test: `.mvn clean install`
+
+
+
+
+
+
+
+
+
+-------------------------
 # User Stories
 ##### US 1:
 **In order to** save money  
