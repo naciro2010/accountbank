@@ -1,4 +1,4 @@
-# EMG Partners Platform API
+# Bank account transactions
 > When not specified, every command should be run from root directory
 
 ## Getting started
