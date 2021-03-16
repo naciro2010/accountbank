@@ -138,11 +138,11 @@ class AccountOperationTest {
             )
         ).usingRecursiveComparison().isEqualTo(
             listOf(
-                OperationDto(
-                    Operation.Type.WITHDRAWAL.toString(),
-                    BigDecimal.valueOf(200).negate(),
-                    BigDecimal.valueOf(0),
-                    now
+                Operation(
+                    type = Operation.Type.WITHDRAWAL,
+                    amount = BigDecimal.valueOf(200).negate(),
+                    balance = BigDecimal.valueOf(0),
+                    date = now
                 )
             )
         )
@@ -163,11 +163,11 @@ class AccountOperationTest {
             )
         ).usingRecursiveComparison().isEqualTo(
             listOf(
-                OperationDto(
-                    Operation.Type.DEPOSIT.toString(),
-                    BigDecimal.valueOf(200),
-                    BigDecimal.valueOf(200),
-                    now
+                Operation(
+                    type = Operation.Type.DEPOSIT,
+                    amount = BigDecimal.valueOf(200),
+                    balance = BigDecimal.valueOf(200),
+                    date = now
                 )
             )
         )

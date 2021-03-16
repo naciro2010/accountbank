@@ -49,6 +49,18 @@ class BankAccountUseCaseTest {
     @Test
     fun add_a_deposit_operation() {
 
+        val operationActual = Operation(
+            Operation.Type.DEPOSIT,
+            BigDecimal.valueOf(100),
+            now
+        )
+
+        val operationExpected = Operation(
+            Operation.Type.DEPOSIT,
+            BigDecimal.valueOf(200),
+            now
+        )
+
         given(accountInfra.getCostumerByAccountIdentify(identifyAccount)).willReturn(
             costumerAccount()
         )
@@ -60,15 +72,19 @@ class BankAccountUseCaseTest {
                 BigDecimal.valueOf(200)
             )
         )
-
-        val operationExpected = Operation(
-            Operation.Type.DEPOSIT,
-            BigDecimal.valueOf(100),
-            now
+        given(
+            accountInfra.addOperationToHistory(
+                costumerAccount(balance = BigDecimal.valueOf(200)),
+                operationActual
+            )
+        ).willReturn(
+            listOf(operationExpected)
         )
+
+
         assertEquals(
             useCase.deposit(
-                operationExpected, costumerAccount()
+                operationActual, costumerAccount()
             ), BankAccount(
                 costumerAccount(balance = BigDecimal.valueOf(200)), listOf(operationExpected)
             )
@@ -79,6 +95,19 @@ class BankAccountUseCaseTest {
 
     @Test
     fun add_a_withdraw_operation() {
+
+
+        val operationActual = Operation(
+            Operation.Type.WITHDRAWAL,
+            BigDecimal.valueOf(100),
+            now
+        )
+
+        val operationExpected = Operation(
+            Operation.Type.WITHDRAWAL,
+            BigDecimal.valueOf(100).negate(),
+            now
+        )
 
         given(accountInfra.getCostumerByAccountIdentify(identifyAccount)).willReturn(
             costumerAccount()
@@ -93,7 +122,7 @@ class BankAccountUseCaseTest {
         )
         given(
             accountInfra.addOperationToHistory(
-                costumerAccount(), Operation(
+                costumerAccount(balance = BigDecimal.valueOf(0)), Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(100),
                     now
@@ -110,16 +139,12 @@ class BankAccountUseCaseTest {
             )
         )
 
-        val operation = Operation(
-            Operation.Type.WITHDRAWAL,
-            BigDecimal.valueOf(100),
-            now
-        )
+
         assertEquals(
             useCase.withdraw(
-                operation, costumerAccount()
+                operationActual, costumerAccount()
             ),
-            BankAccount(costumerAccount(balance = BigDecimal.valueOf(0)), listOf(operation))
+            BankAccount(costumerAccount(balance = BigDecimal.valueOf(0)), listOf(operationExpected))
         )
     }
 
