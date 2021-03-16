@@ -14,7 +14,7 @@ class CostumerAccountOperation(private val accountInfra: IAccountOperation) : IC
         return accountInfra.getAccountByAccountId(costumerAccount.identify).let {
             accountInfra.updateAccount(it, it.balance.add(operation.amount))
         }.also {
-            accountInfra.addOperationToHistory(it.identify, operation)
+            accountInfra.addOperationToHistory(it, operation)
         }.let { it }
     }
 
@@ -31,7 +31,7 @@ class CostumerAccountOperation(private val accountInfra: IAccountOperation) : IC
             .let {
                 accountInfra.updateAccount(it, it.balance.subtract(operation.amount))
             }.also {
-                accountInfra.addOperationToHistory(it.identify, operation)
+                accountInfra.addOperationToHistory(it, operation)
             }.let { it }
     }
 

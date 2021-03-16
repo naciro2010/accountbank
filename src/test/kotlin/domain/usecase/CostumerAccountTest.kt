@@ -37,21 +37,22 @@ class CostumerAccountTest {
 
     private val identifyAccount = UUID.randomUUID().toString()
 
-    private fun initCostumerAccount(balance: BigDecimal? = null) = CostumerAccount(
-        identifyAccount,
-        "firstName",
-        " lastName",
-        balance?.let { balance } ?: BigDecimal.valueOf(100)
-    )
 
+    private fun costumerAccount(
+        identify: String = identifyAccount,
+        balance: BigDecimal? = null
+    ) = CostumerAccount(
+        identify, "firstName",
+        " lastName", balance?.let { balance } ?: BigDecimal.valueOf(100)
+    )
 
     @Test
     fun add_a_deposit_operation() {
 
         given(accountInfra.getAccountByAccountId(identifyAccount)).willReturn(
-            initCostumerAccount()
+            costumerAccount()
         )
-        given(accountInfra.updateAccount(initCostumerAccount(), BigDecimal.valueOf(200))).willReturn(
+        given(accountInfra.updateAccount(costumerAccount(), BigDecimal.valueOf(200))).willReturn(
             CostumerAccount(
                 identifyAccount,
                 "firstName",
@@ -66,8 +67,8 @@ class CostumerAccountTest {
                     Operation.Type.DEPOSIT,
                     BigDecimal.valueOf(100),
                     now
-                ), initCostumerAccount()
-            ), initCostumerAccount(BigDecimal.valueOf(200))
+                ), costumerAccount()
+            ), costumerAccount(balance = BigDecimal.valueOf(200))
         )
 
 
@@ -79,9 +80,9 @@ class CostumerAccountTest {
     fun add_a_withdraw_operation() {
 
         given(accountInfra.getAccountByAccountId(identifyAccount)).willReturn(
-            initCostumerAccount()
+            costumerAccount()
         )
-        given(accountInfra.updateAccount(initCostumerAccount(), BigDecimal.valueOf(0))).willReturn(
+        given(accountInfra.updateAccount(costumerAccount(), BigDecimal.valueOf(0))).willReturn(
             CostumerAccount(
                 identifyAccount,
                 "firstName",
@@ -92,7 +93,7 @@ class CostumerAccountTest {
 
         given(
             accountInfra.addOperationToHistory(
-                identifyAccount, Operation(
+                costumerAccount(), Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(100),
                     now
@@ -103,19 +104,19 @@ class CostumerAccountTest {
                 OperationDto(
                     Operation.Type.WITHDRAWAL.toString(),
                     BigDecimal.valueOf(100).negate(),
+                    BigDecimal.valueOf(0),
                     now
                 )
             )
         )
-
         assertEquals(
             useCase.withdraw(
                 Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(100),
                     now
-                ), initCostumerAccount()
-            ), initCostumerAccount(BigDecimal.valueOf(0))
+                ), costumerAccount()
+            ), costumerAccount(balance = BigDecimal.valueOf(0))
         )
     }
 
@@ -123,7 +124,7 @@ class CostumerAccountTest {
     fun add_a_withdraw_operation_throw_exception_Operation_no_authorization() {
 
         given(accountInfra.getAccountByAccountId(identifyAccount)).willReturn(
-            initCostumerAccount()
+            costumerAccount()
         )
 
         assertThatThrownBy {
@@ -132,7 +133,7 @@ class CostumerAccountTest {
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(200),
                     now
-                ), initCostumerAccount()
+                ), costumerAccount()
             )
         }.isInstanceOf(Operation_no_authorization::class.java)
     }
@@ -156,7 +157,7 @@ class CostumerAccountTest {
         )
 
         assertEquals(
-            useCase.showHistory(initCostumerAccount()), listOf(
+            useCase.showHistory(costumerAccount()), listOf(
                 Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(100).negate(),

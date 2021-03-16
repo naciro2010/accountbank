@@ -29,16 +29,16 @@ class AccountOperation(var accountDataSource: AccountDataSource = AccountDataSou
         )
     }
 
-    override fun addOperationToHistory(accountId: String, operation: Operation): List<OperationDto> {
+    override fun addOperationToHistory(account: CostumerAccount, operation: Operation): List<OperationDto> {
         if (Operation.Type.WITHDRAWAL == operation.type)
             operation.amount = operation.amount.negate()
 
-        val operationDto = operation.toInfra(operation.type.toString())
+        val operationDto = operation.toInfra(operation.type.toString(), account.balance)
 
-        accountDataSource.operations[accountId] =
-            accountDataSource.operations[accountId]?.let { it + listOf(operationDto) } ?: listOf(operationDto)
+        accountDataSource.operations[account.identify] =
+            accountDataSource.operations[account.identify]?.let { it + listOf(operationDto) } ?: listOf(operationDto)
 
-        return accountDataSource.operations[accountId] ?: throw NoHistoryException(accountId = accountId)
+        return accountDataSource.operations[account.identify] ?: throw NoHistoryException(accountId = account.identify)
     }
 
     override fun updateAccount(account: CostumerAccount, balance: BigDecimal): CostumerAccount {

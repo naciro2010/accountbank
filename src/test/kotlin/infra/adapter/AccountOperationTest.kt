@@ -33,12 +33,16 @@ class AccountOperationTest {
 
     private val identifyAccount = UUID.randomUUID().toString()
 
+    private fun costumerAccount(
+        identify: String,
+        balance: BigDecimal = BigDecimal.valueOf(0)
+    ) = CostumerAccount(identify, "", "", balance)
+
     @Test
     fun testGetOperationsByAccountId() {
 
-
         adapter.addOperationToHistory(
-            UUID.randomUUID().toString(), Operation(
+            costumerAccount(UUID.randomUUID().toString(), BigDecimal.valueOf(405)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(405),
                 now
@@ -46,28 +50,28 @@ class AccountOperationTest {
         )
 
         adapter.addOperationToHistory(
-            UUID.randomUUID().toString(), Operation(
+            costumerAccount(UUID.randomUUID().toString(), BigDecimal.valueOf(100)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(100),
                 now
             )
         )
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(200)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(200),
                 now
             )
         )
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(500)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(300),
                 now
             )
         )
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(300)), Operation(
                 Operation.Type.WITHDRAWAL,
                 BigDecimal.valueOf(200),
                 now
@@ -78,17 +82,20 @@ class AccountOperationTest {
                 Operation(
                     Operation.Type.DEPOSIT,
                     BigDecimal.valueOf(200),
-                    now
+                    now,
+                    BigDecimal.valueOf(200)
                 ),
                 Operation(
                     Operation.Type.DEPOSIT,
                     BigDecimal.valueOf(300),
-                    now
+                    now,
+                    BigDecimal.valueOf(500)
                 ),
                 Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(200).negate(),
-                    now
+                    now,
+                    BigDecimal.valueOf(300)
                 )
             )
         )
@@ -123,7 +130,7 @@ class AccountOperationTest {
 
         assertThat(
             adapter.addOperationToHistory(
-                identifyAccount, Operation(
+                costumerAccount(identifyAccount, BigDecimal.valueOf(0)), Operation(
                     Operation.Type.WITHDRAWAL,
                     BigDecimal.valueOf(200),
                     now
@@ -134,6 +141,7 @@ class AccountOperationTest {
                 OperationDto(
                     Operation.Type.WITHDRAWAL.toString(),
                     BigDecimal.valueOf(200).negate(),
+                    BigDecimal.valueOf(0),
                     now
                 )
             )
@@ -147,7 +155,7 @@ class AccountOperationTest {
 
         assertThat(
             adapter.addOperationToHistory(
-                identifyAccount, Operation(
+                CostumerAccount(identifyAccount, "", "", BigDecimal.valueOf(200)), Operation(
                     Operation.Type.DEPOSIT,
                     BigDecimal.valueOf(200),
                     now
@@ -157,6 +165,7 @@ class AccountOperationTest {
             listOf(
                 OperationDto(
                     Operation.Type.DEPOSIT.toString(),
+                    BigDecimal.valueOf(200),
                     BigDecimal.valueOf(200),
                     now
                 )
@@ -169,23 +178,23 @@ class AccountOperationTest {
     @Test
     fun add_a_deposit_withdrawal_operation_to_history() {
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(200)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(200),
                 now
             )
         )
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(500)), Operation(
                 Operation.Type.DEPOSIT,
                 BigDecimal.valueOf(300),
                 now
             )
         )
         adapter.addOperationToHistory(
-            identifyAccount, Operation(
+            costumerAccount(identifyAccount, BigDecimal.valueOf(350)), Operation(
                 Operation.Type.WITHDRAWAL,
-                BigDecimal.valueOf(200),
+                BigDecimal.valueOf(150),
                 now
             )
         )
@@ -196,16 +205,19 @@ class AccountOperationTest {
                 OperationDto(
                     Operation.Type.DEPOSIT.toString(),
                     BigDecimal.valueOf(200),
+                    BigDecimal.valueOf(200),
                     now
                 ),
                 OperationDto(
                     Operation.Type.DEPOSIT.toString(),
                     BigDecimal.valueOf(300),
+                    BigDecimal.valueOf(500),
                     now
                 ),
                 OperationDto(
                     Operation.Type.WITHDRAWAL.toString(),
-                    BigDecimal.valueOf(200).negate(),
+                    BigDecimal.valueOf(150).negate(),
+                    BigDecimal.valueOf(350),
                     now
                 )
             )
