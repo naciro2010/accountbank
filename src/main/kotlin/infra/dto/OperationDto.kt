@@ -8,3 +8,4 @@ data class OperationDto(val type: String, val amount: BigDecimal, val balance: B
 
 fun OperationDto.toDomain() = Operation(Operation.Type.valueOf(type), amount, balance = balance, date = date)
 fun Operation.toInfra(type: String, balance: BigDecimal) = OperationDto(type, amount, balance, date)
+fun List<OperationDto>.toDomain() = map { it.toDomain() }

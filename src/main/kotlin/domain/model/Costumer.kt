@@ -2,7 +2,7 @@ package domain.model
 
 import java.math.BigDecimal
 
-data class CostumerAccount(
+data class Costumer(
     val identify: String,
     val firstName: String,
     val lastName: String,

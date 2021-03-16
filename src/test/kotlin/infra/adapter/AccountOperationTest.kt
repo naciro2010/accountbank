@@ -1,6 +1,6 @@
 package infra.adapter
 
-import domain.model.CostumerAccount
+import domain.model.Costumer
 import domain.model.Operation
 import infra.dto.AccountDto
 import infra.dto.OperationDto
@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 
 class AccountOperationTest {
     @InjectMocks
-    private lateinit var adapter: AccountOperation
+    private lateinit var adapter: CostumerOperation
 
 
     private val now = LocalDateTime.of(
@@ -36,7 +36,7 @@ class AccountOperationTest {
     private fun costumerAccount(
         identify: String,
         balance: BigDecimal = BigDecimal.valueOf(0)
-    ) = CostumerAccount(identify, "", "", balance)
+    ) = Costumer(identify, "", "", balance)
 
     @Test
     fun testGetOperationsByAccountId() {
@@ -77,7 +77,7 @@ class AccountOperationTest {
                 now
             )
         )
-        assertThat(adapter.getOperationsByAccountId(identifyAccount)).usingRecursiveComparison().isEqualTo(
+        assertThat(adapter.getOperationsByAccountIdentify(identifyAccount)).usingRecursiveComparison().isEqualTo(
             listOf(
                 Operation(
                     Operation.Type.DEPOSIT,
@@ -107,8 +107,8 @@ class AccountOperationTest {
         adapter.accountDataSource.accounts[identifyAccount] = accountDto
 
         assertEquals(
-            adapter.getAccountByAccountId(identifyAccount),
-            CostumerAccount(identifyAccount, "firstName", "lastName", BigDecimal.valueOf(100))
+            adapter.getCostumerByAccountIdentify(identifyAccount),
+            Costumer(identifyAccount, "firstName", "lastName", BigDecimal.valueOf(100))
         )
 
     }
@@ -120,7 +120,7 @@ class AccountOperationTest {
 
 
         Assertions.assertThatThrownBy {
-            adapter.getAccountByAccountId(UUID.randomUUID().toString())
+            adapter.getCostumerByAccountIdentify(UUID.randomUUID().toString())
         }.isInstanceOf(NoAccountFoundException::class.java)
 
     }
@@ -155,7 +155,7 @@ class AccountOperationTest {
 
         assertThat(
             adapter.addOperationToHistory(
-                CostumerAccount(identifyAccount, "", "", BigDecimal.valueOf(200)), Operation(
+                Costumer(identifyAccount, "", "", BigDecimal.valueOf(200)), Operation(
                     Operation.Type.DEPOSIT,
                     BigDecimal.valueOf(200),
                     now

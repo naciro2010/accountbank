@@ -1,9 +1,9 @@
 package accountbank
 
-import domain.model.CostumerAccount
+import domain.model.Costumer
 import domain.model.Operation
-import domain.usecase.CostumerAccountOperation
-import infra.adapter.AccountOperation
+import domain.usecase.BankAccountUseCase
+import infra.adapter.CostumerOperation
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -18,7 +18,7 @@ import java.time.Month
 
 class StepDefs {
 
-    private lateinit var costumerAccount: CostumerAccountOperation
+    private lateinit var costumerAccount: BankAccountUseCase
 
     private val identifyAccount = "936a0787-7a00-46b3-af4d-6ab55d22cd6a"
     private lateinit var balanceAnswer: BigDecimal
@@ -32,8 +32,8 @@ class StepDefs {
 
     @Before
     fun setUp() {
-        val accountOperation = AccountOperation()
-        costumerAccount = CostumerAccountOperation(accountOperation)
+        val accountOperation = CostumerOperation()
+        costumerAccount = BankAccountUseCase(accountOperation)
     }
 
     @Given("I have an empty account")
@@ -41,7 +41,7 @@ class StepDefs {
     fun i_have_an_empty_account() {
         costumerAccount.deposit(
             Operation(Operation.Type.DEPOSIT, BigDecimal.valueOf(0), now),
-            CostumerAccount(identifyAccount, "firstName", "LastName")
+            Costumer(identifyAccount, "firstName", "LastName")
         )
     }
 
@@ -51,8 +51,8 @@ class StepDefs {
     fun i_deposit_amount_euros(amount: BigDecimal) {
         balanceAnswer = costumerAccount.deposit(
             Operation(Operation.Type.DEPOSIT, amount, now),
-            CostumerAccount(identifyAccount, "firstName", "LastName")
-        ).balance
+            Costumer(identifyAccount, "firstName", "LastName")
+        ).costumer.balance
     }
 
     @Given("I withdraw (\\d+) euros")
@@ -60,8 +60,8 @@ class StepDefs {
     fun i_withdraw_amount_euros(amount: BigDecimal) {
         balanceAnswer = costumerAccount.withdraw(
             Operation(Operation.Type.WITHDRAWAL,amount, now),
-            CostumerAccount(identifyAccount, "firstName", "LastName")
-        ).balance
+            Costumer(identifyAccount, "firstName", "LastName")
+        ).costumer.balance
     }
 
     @When("I ask for my balance")
@@ -78,7 +78,7 @@ class StepDefs {
 
     @When("I show my history")
     fun i_show_my_history() {
-        listOperation = costumerAccount.showHistory(CostumerAccount(identifyAccount, "firstName", "LastName"))
+        listOperation = costumerAccount.showHistory(Costumer(identifyAccount, "firstName", "LastName"))
     }
 
     @Then("I should see")
